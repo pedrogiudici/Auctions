@@ -1,0 +1,71 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {%if winner%}
+    <h2>Listing: {{title}} - CLOSED</h2>
+    {%else%}
+    <h2>Listing: {{title}}</h2>
+    {%endif%}
+    {%if user.is_authenticated%}
+    <form action="{% url 'addwatchlist' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="user" value="{{user.username}}">
+        <input type="hidden" name="auction" value="{{title}}">
+        <input type="submit" value="Watchlist" style="color: white; background-color: grey; border: 0px; border-radius: 10px;font-size: small;">
+    </form>
+    {% endif %}
+    {%if urlimage%}
+    <img src="{{urlimage}}" alt="Image of auction" height="300">
+    {%endif%}
+    <p>{{description}}</p>
+    <h3>${{startbid}}.00</h3>
+    {%if user.is_authenticated and winner == None %}
+    <form action="{% url 'bid' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="user" value="{{user.username}}">
+        <input type="hidden" name="auction" value="{{title}}">
+        <div class="form-group">
+            <input autofocus class="form-control" type="number" name="bid" placeholder="Bid" min="{{startbid}}" required>
+        </div>
+    </form>
+    {%endif%}
+    {%if winner and winner != usern%}
+    <h3>The Winner is: {{winner}}</h3>
+    {%elif winner == usern%}
+    <h3>No winner</h3>
+    {%endif%}
+    <h3>Details</h3>
+    <ul>
+        <li>Listed by: <strong>{{usern}}</strong></li>
+        {%if category%}
+        <li>Category: {{category}}</li>
+        {%else%}
+        <li>Category: No Category Listed</li>
+        {%endif%}
+    </ul>
+    <h3>Comments</h3>
+    {%for c in comment%}
+        <div style="width: 100%;padding: 10px; border: 1px solid rgb(216, 216, 216); margin-bottom: 20px">
+            <h5>{{c.user}}</h5>
+            <ul><li>{{c.comment}}</li></ul>
+        </div>
+        {%empty%}
+        <ul><li>Empty</li></ul>
+        {%endfor%}
+    {%if user.is_authenticated %}
+    <h4>Add comments</h4>
+    <form action="{% url 'comment' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="user" value="{{user.username}}">
+        <input type="hidden" name="auction" value="{{title}}">
+        <div class="form-group">
+            <input autofocus class="form-control" type="text" name="comment" placeholder="Comment" required>
+        </div>
+    </form>
+    {%endif%}
+    {%if user == usern and not winner%}
+    <form action="{%url 'delete' id %}">
+        <input type="submit" value="Close this auction" style="background-color: red; border: 0px; color: white; border-radius: 10px; margin-top: 20px;">
+    </form>
+    {%endif%}
+{% endblock %}

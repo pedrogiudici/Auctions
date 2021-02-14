@@ -1,0 +1,23 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+        {%for a in auc%}
+        <div style="height: 250px; padding: 10px; border: 1px solid rgb(216, 216, 216); margin-bottom: 20px; display: flex;">
+            <div style="height: 230px; width: 400px; float: left; text-align: center;">
+                {%if a.url%}
+                <img src="{{a.url}}" alt="Image of auction" style="max-width: 95%; max-height: 100%; position: relative; top: 50%; transform: translate(0, -50%)">
+                {%endif%}
+            </div>
+            <div style = "margin-left: 20px;">
+                <h3><a href="{%url 'auction' a.id %}" style="color: black;">{{a.title}}</a></h3>
+                <p style="font-weight: 500;">Price: ${{a.startbid.bid}}.00</p>
+                <p>{{a.description}}</p>
+            </div>
+        </div>
+        {%empty%}
+        <ul>
+            <li>Empty</li>
+        </ul>
+        {%endfor%}
+{% endblock %}
